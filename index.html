@@ -1,92 +1,100 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Initiative tracker</title>
-	</head>
-	<body>
-		<div id="app">
-			<div v-if="editing">
-
-			</div>
-			<div v-else>
-				<h3>Round {{ round }}</h3>
-				<h3>Turn {{ turn }}</h3>
-				<ul>
-					<li v-for="player in players">{{ player.name }} : {{ player.initiative }}</li>
-				</ul>
-				<button v-on:click="nextPlayer">Next</button>
-				<button v-on:click="sortPlayers">Sort</button>
-			</div>
-		</div>
-		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-		<script>
-			function comparePlayers (a, b) {
-				//Sorts highest first
-				if (a.initiative > b.initiative) return -1;
-				if (a.initiative < b.initiative) return 1;
-				if (a.initiative === b.initiative) {
-					if (a.dexterity > b.dexterity) return -1;
-					if (a.dexterity < b.dexterity) return -1;
-					return 0
-				}
-			}
-			var app = new Vue({
-				el: "#app",
-				data: {
-					editing: false,
-					round: 0,
-					turn: 0,
-					players: [
-						{
-							name: "Skylan",
-							player: "Jen",
-							initiative:15,
-							dexterity: 14
-						},
-						{
-							name: "Alexander",
-							player: "Rob",
-							initiative: 18,
-							dexterity: 12
-						},
-						{
-							name: "Loki",
-							player: "David",
-							initiative: 15,
-							dexterity: 16
-						},
-						{
-							name: "Vance",
-							player: "Davis",
-							initiative: 8,
-							dexterity: 13
-						},
-						{
-							name: "Korvan",
-							player: "Seng",
-							initiative: 14,
-							dexterity: 16
-						}
-					]
-				},
-				methods: {
-					sortPlayers: function () {
-						this.players.sort(comparePlayers);
-						this.round = 1;
-						this.turn = 1;
-					},
-					nextPlayer: function () {
-						var player = this.players.shift();
-						this.players.push(player);
-						if (this.turn >= this.players.length) {
-							this.round ++;
-							this.turn = 1;
-						} else {
-							this.turn ++;
-						}
-					}
-				}
-			})
-		</script>
-	</body>
+  <head>
+    <title>Initiative tracker</title>
+  </head>
+  <body>
+    <div id="app">
+      <div v-if="combat">
+	<h3>Round {{ round }}</h3>
+	<h3>Turn {{ turn }}</h3>
+	<ul>
+	  <li v-for="player in players">Name:{{ player.name }} : {{ player.initiative }}</li>
+	</ul>
+	<button v-on:click="nextPlayer">Next</button>
+      </div>
+      <div v-else>
+	<div>
+	  <label>Name: <input type="text" v-model="newPlayer.name" /></label>
+	  <label>Player: <input type="text" v-model="newPlayer.player" /></label>
+	  <label>Dexterity: <input type="text" v-model="newPlayer.dexterity" v:on:enter="addPlayer" /></label>
+	  <button v-on:click="addPlayer">Add Player</button></label>
+	</div>
+	<div v-for="player in players">
+	  <p><strong>Name:</strong> {{ player.name }} </p>
+	  <p><strong>Player:</strong> {{ player.player }}</p>
+	  <p><strong>Dextrity:</strong> {{ player.dexterity }}</p>
+	  <p><label><strong>Init:</strong> <input type="text" v-model="player.initiative" /></label></p>
+	</div>
+	<button v-on:click="sortPlayers" v-if="players.length">Start Combat</button>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+      var defaultPlayersArray = [];
+      if (window.localStorage.getItem('players')) {
+	defaultPlayersArray = JSON.parse(window.localStorage.getItem('players'));
+      }
+      function comparePlayers (a, b) {
+	//Sorts highest first
+	if (a.initiative > b.initiative) return -1;
+	if (a.initiative < b.initiative) return 1;
+	if (a.initiative === b.initiative) {
+	  if (a.dexterity > b.dexterity) return -1;
+	  if (a.dexterity < b.dexterity) return -1;
+	  return 0
+	}
+      }
+      var app = new Vue({
+	el: "#app",
+	data: {
+	  combat: false,
+	  editing: false,
+	  round: 0,
+	  turn: 0,
+	  players: defaultPlayersArray,
+	  currentOrder: [],
+	  newPlayer: {
+	    name: "",
+	    player: "",
+	    dexterity: 0,
+	    initiative: 0
+	  },
+	  newMonster: {
+	    name: "Monster",
+	    initiative: 0,
+	    dexterity: 0
+	  }
+	},
+	methods: {
+	  addPlayer: function () {
+	    this.players.push(this.newPlayer);
+	    this.newPlayer = {
+	      name: "",
+	      player: "",
+	      dexterity: 0,
+	      initiative: 0
+	    };
+	    let players = JSON.stringify(this.players);
+	    window.localStorage.setItem('players', players);
+	  },
+	  nextPlayer: function () {
+	    var player = this.players.shift();
+	    this.players.push(player);
+	    if (this.turn >= this.players.length) {
+	      this.round ++;
+	      this.turn = 1;
+	    } else {
+	      this.turn ++;
+	    }
+	  },
+	  sortPlayers: function () {
+	    this.players.sort(comparePlayers);
+	    this.round = 1;
+	    this.turn = 1;
+	  },
+	}
+      });
+    </script>
+  </body>
 </html>
