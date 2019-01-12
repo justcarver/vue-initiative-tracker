@@ -8,6 +8,8 @@
       <div v-if="combat">
 	<h3>Round {{ round }}</h3>
 	<h3>Turn {{ turn }}</h3>
+	<button v-on:click="nextPlayer">Next</button>
+	<button v-on:click="endCombat">End Combat</button>
 	<ul>
 	  <li v-for="player in currentOrder"><input type="checkbox" v-model="player.status"> Name: {{ player.name }} : {{ player.initiative }} (Dex {{ player.dexterity }})</li>
 	</ul>
@@ -16,17 +18,20 @@
       </div>
       <div v-else>
 	<div>
-	  <label>Name: <input type="text" v-model="newPlayer.name" /></label>
-	  <label>Player: <input type="text" v-model="newPlayer.player" /></label>
-	  <label>Dexterity: <input type="text" v-model.number="newPlayer.dexterity" v:on:enter="addPlayer" /></label>
-	  <button v-on:click="addPlayer">Add Player</button></label>
-	</div>
-	<div>
 	  <label>Name: <input type="text" v-model="newMonster.name" /></label>
 	  <label>Dexterity: <input type="text" v-model.number="newMonster.dexterity" /></label>
 	  <label>Initiative: <input type="text" v-model.number="newMonster.initiative" v:on:enter="addMonster" /></label>
 	  <button v-on:click="addMonster">Add Monster</button></label>
 	</div>
+	<div v-if="addingPlayers">
+	  <label>Name: <input type="text" v-model="newPlayer.name" /></label>
+	  <label>Player: <input type="text" v-model="newPlayer.player" /></label>
+	  <label>Dexterity: <input type="text" v-model.number="newPlayer.dexterity" v:on:enter="addPlayer" /></label>
+	  <button v-on:click="addPlayer">Add Player</button>
+	  <button v-on:click="toggleAddingPlayers">Stop Adding</button>
+	</div>
+	<button v-else v-on:click="toggleAddingPlayers">Add Players</button>
+	<button v-on:click="startCombat" v-if="players.length">Start Combat</button>
 	<div v-for="player in players">
 	  <p><strong>Name:</strong> {{ player.name }} </p>
 	  <p><strong>Player:</strong> {{ player.player }}</p>
@@ -38,11 +43,11 @@
 	  <p><strong>Dextrity:</strong> {{ monster.dexterity }}</p>
 	  <p><strong>Init:</strong> {{ monster.initiative }}</p>
 	</div>
-
 	<button v-on:click="startCombat" v-if="players.length">Start Combat</button>
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/ramda/0.25.0/ramda.min.js"></script>
     <script>
       var defaultPlayersArray = [];
@@ -74,6 +79,7 @@
       var app = new Vue({
 	el: "#app",
 	data: {
+	  addingPlayers: false,
 	  combat: false,
 	  currentOrder: [],
 	  editing: false,
@@ -158,7 +164,10 @@
 	    this.combat = true;
 	    this.round = 1;
 	    this.turn = 1;
-	  }
+	  },
+	  toggleAddingPlayers: function () {
+	    this.addingPlayers = !this.addingPlayers;
+	  },
 	}
       });
     </script>
