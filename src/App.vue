@@ -8,22 +8,49 @@
     </v-toolbar>
 
     <v-content>
-      <HelloWorld/>
+      <PlayerList v-bind:players="players" v-if="combat == false" />
     </v-content>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
+import AddPlayerForm from './components/AddPlayerForm.vue'
+import PlayerList from './components/PlayerList.vue'
+
+let savedPlayers = []
+if (window.localStorage.players) {
+  savedPlayers = JSON.parse(window.localStorage.players);
+}
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    AddPlayerForm,
+    PlayerList
   },
   data () {
     return {
-      //
+      addingPlayers: false,
+      combat: false,
+      currentOrder: [],
+      editing: [],
+      monsters: [],
+      newMonster: {
+	name: "Monster 1",
+	initiative: 0,
+	dexterity: 0,
+	status: false
+      },
+      newPlayers: {
+	name: "",
+	players: "",
+	dexterity: 0,
+	initiative: 0,
+	status: false
+      },
+      players: savedPlayers,
+      round: 0,
+      turn: 0
     }
   }
 }
