@@ -1,8 +1,17 @@
 <template>
   <v-container>
-    <v-layout>
-      <v-flex xs12 sm6 md4 v-for="player in players">
-	test
+    <v-layout row wrap>
+      <v-flex xs4 v-for="player in players">
+	<v-card>
+	  <v-card-title primary-title>
+	    <div>
+	      <h3 class="headline mb-0">{{ player.name }}</h3>
+	      <div>{{ player.player }}</div>
+	      <div>{{ player.dexterity}}</div>
+	      <v-text-field type="number" v-model="player.initiative" />
+	    </div>
+	  </v-card-title>
+	</v-card>
       </v-flex>
     </v-layout>
   </v-container>
